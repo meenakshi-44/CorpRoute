@@ -6,7 +6,9 @@ const { randomUUID } = require("crypto");
 
 const app = express();
 
-const PORT = 5000;
+// Use Render/Railway's PORT in deployment,
+// otherwise use 5000 locally.
+const PORT = process.env.PORT || 5000;
 
 const dataDirectory = path.join(__dirname, "data");
 
@@ -20,13 +22,16 @@ const expensesFile = path.join(
   "expenses.json"
 );
 
-// Middleware
+// =========================================================
+// MIDDLEWARE
+// =========================================================
+
 app.use(cors());
 app.use(express.json());
 
-/* =========================================================
-   TRAVEL REQUEST FUNCTIONS
-   ========================================================= */
+// =========================================================
+// TRAVEL REQUEST FUNCTIONS
+// =========================================================
 
 // Read travel requests
 async function readRequests() {
@@ -41,8 +46,11 @@ async function readRequests() {
     }
 
     return JSON.parse(data);
+
   } catch (error) {
+
     if (error.code === "ENOENT") {
+
       await fs.mkdir(dataDirectory, {
         recursive: true,
       });
@@ -61,6 +69,7 @@ async function readRequests() {
 
 // Save travel requests
 async function saveRequests(requests) {
+
   await fs.mkdir(dataDirectory, {
     recursive: true,
   });
@@ -71,13 +80,15 @@ async function saveRequests(requests) {
   );
 }
 
-/* =========================================================
-   EXPENSE FUNCTIONS
-   ========================================================= */
+// =========================================================
+// EXPENSE FUNCTIONS
+// =========================================================
 
 // Read expenses
 async function readExpenses() {
+
   try {
+
     const data = await fs.readFile(
       expensesFile,
       "utf-8"
@@ -88,8 +99,11 @@ async function readExpenses() {
     }
 
     return JSON.parse(data);
+
   } catch (error) {
+
     if (error.code === "ENOENT") {
+
       await fs.mkdir(dataDirectory, {
         recursive: true,
       });
@@ -108,6 +122,7 @@ async function readExpenses() {
 
 // Save expenses
 async function saveExpenses(expenses) {
+
   await fs.mkdir(dataDirectory, {
     recursive: true,
   });
@@ -118,32 +133,35 @@ async function saveExpenses(expenses) {
   );
 }
 
-/* =========================================================
-   HOME
-   ========================================================= */
+// =========================================================
+// HOME
+// =========================================================
 
 app.get("/", (req, res) => {
-  res.send("TravelOps Backend is Running!");
+  res.send("CorpRoute Backend is Running!");
 });
 
-/* =========================================================
-   TRAVEL REQUEST API
-   ========================================================= */
+// =========================================================
+// TRAVEL REQUEST API
+// =========================================================
 
 // GET all travel requests
 app.get(
   "/api/travel-requests",
   async (req, res) => {
+
     try {
+
       const requests = await readRequests();
 
       res.status(200).json(requests);
+
     } catch (error) {
+
       console.error(error);
 
       res.status(500).json({
-        message:
-          "Unable to fetch travel requests",
+        message: "Unable to fetch travel requests",
       });
     }
   }
@@ -153,7 +171,9 @@ app.get(
 app.post(
   "/api/travel-requests",
   async (req, res) => {
+
     try {
+
       const {
         employeeName,
         destination,
@@ -163,6 +183,7 @@ app.post(
         budget,
       } = req.body;
 
+      // Validate required fields
       if (
         !employeeName ||
         !destination ||
@@ -171,41 +192,53 @@ app.post(
         !returnDate ||
         !budget
       ) {
+
         return res.status(400).json({
-          message:
-            "Please fill in all fields",
+          message: "Please fill in all fields",
         });
       }
 
+      // Validate dates
       if (
         new Date(departureDate) >
         new Date(returnDate)
       ) {
+
         return res.status(400).json({
           message:
             "Return date must be after departure date",
         });
       }
 
+      // Validate budget
       if (Number(budget) <= 0) {
+
         return res.status(400).json({
           message:
             "Budget must be greater than zero",
         });
       }
 
-      const requests =
-        await readRequests();
+      const requests = await readRequests();
 
       const newRequest = {
+
         id: randomUUID(),
+
         employeeName,
+
         destination,
+
         purpose,
+
         departureDate,
+
         returnDate,
+
         budget: Number(budget),
+
         status: "Pending",
+
         createdAt:
           new Date().toISOString(),
       };
@@ -215,11 +248,15 @@ app.post(
       await saveRequests(requests);
 
       res.status(201).json({
+
         message:
           "Travel request submitted successfully",
+
         request: newRequest,
       });
+
     } catch (error) {
+
       console.error(error);
 
       res.status(500).json({
@@ -234,8 +271,11 @@ app.post(
 app.put(
   "/api/travel-requests/:id/status",
   async (req, res) => {
+
     try {
+
       const { id } = req.params;
+
       const { status } = req.body;
 
       const allowedStatuses = [
@@ -244,16 +284,14 @@ app.put(
         "Pending",
       ];
 
-      if (
-        !allowedStatuses.includes(status)
-      ) {
+      if (!allowedStatuses.includes(status)) {
+
         return res.status(400).json({
           message: "Invalid status",
         });
       }
 
-      const requests =
-        await readRequests();
+      const requests = await readRequests();
 
       const requestIndex =
         requests.findIndex(
@@ -262,6 +300,7 @@ app.put(
         );
 
       if (requestIndex === -1) {
+
         return res.status(404).json({
           message:
             "Travel request not found",
@@ -274,11 +313,16 @@ app.put(
       await saveRequests(requests);
 
       res.status(200).json({
-        message: `Request ${status.toLowerCase()} successfully`,
+
+        message:
+          `Request ${status.toLowerCase()} successfully`,
+
         request:
           requests[requestIndex],
       });
+
     } catch (error) {
+
       console.error(error);
 
       res.status(500).json({
@@ -289,20 +333,23 @@ app.put(
   }
 );
 
-/* =========================================================
-   EXPENSE MANAGEMENT API
-   ========================================================= */
+// =========================================================
+// EXPENSE MANAGEMENT API
+// =========================================================
 
 // GET all expenses
 app.get(
   "/api/expenses",
   async (req, res) => {
+
     try {
-      const expenses =
-        await readExpenses();
+
+      const expenses = await readExpenses();
 
       res.status(200).json(expenses);
+
     } catch (error) {
+
       console.error(error);
 
       res.status(500).json({
@@ -317,7 +364,9 @@ app.get(
 app.post(
   "/api/expenses",
   async (req, res) => {
+
     try {
+
       const {
         travelRequestId,
         employeeName,
@@ -338,6 +387,7 @@ app.post(
         !expenseDate ||
         !description
       ) {
+
         return res.status(400).json({
           message:
             "Please fill in all expense fields",
@@ -346,6 +396,7 @@ app.post(
 
       // Validate amount
       if (Number(amount) <= 0) {
+
         return res.status(400).json({
           message:
             "Expense amount must be greater than zero",
@@ -353,8 +404,7 @@ app.post(
       }
 
       // Check whether travel request exists
-      const requests =
-        await readRequests();
+      const requests = await readRequests();
 
       const travelRequest =
         requests.find(
@@ -364,17 +414,20 @@ app.post(
         );
 
       if (!travelRequest) {
+
         return res.status(404).json({
           message:
             "Travel request not found",
         });
       }
 
-      // Expense can only be submitted for approved trips
+      // Expense can only be submitted
+      // for approved trips
       if (
         travelRequest.status !==
         "Approved"
       ) {
+
         return res.status(400).json({
           message:
             "Expenses can only be added for approved travel requests",
@@ -395,16 +448,17 @@ app.post(
           category
         )
       ) {
+
         return res.status(400).json({
           message:
             "Invalid expense category",
         });
       }
 
-      const expenses =
-        await readExpenses();
+      const expenses = await readExpenses();
 
       const newExpense = {
+
         id: randomUUID(),
 
         travelRequestId,
@@ -432,11 +486,15 @@ app.post(
       await saveExpenses(expenses);
 
       res.status(201).json({
+
         message:
           "Expense submitted successfully",
+
         expense: newExpense,
       });
+
     } catch (error) {
+
       console.error(error);
 
       res.status(500).json({
@@ -451,8 +509,11 @@ app.post(
 app.put(
   "/api/expenses/:id/status",
   async (req, res) => {
+
     try {
+
       const { id } = req.params;
+
       const { status } = req.body;
 
       const allowedStatuses = [
@@ -461,17 +522,15 @@ app.put(
         "Pending",
       ];
 
-      if (
-        !allowedStatuses.includes(status)
-      ) {
+      if (!allowedStatuses.includes(status)) {
+
         return res.status(400).json({
           message:
             "Invalid expense status",
         });
       }
 
-      const expenses =
-        await readExpenses();
+      const expenses = await readExpenses();
 
       const expenseIndex =
         expenses.findIndex(
@@ -480,6 +539,7 @@ app.put(
         );
 
       if (expenseIndex === -1) {
+
         return res.status(404).json({
           message:
             "Expense not found",
@@ -492,11 +552,16 @@ app.put(
       await saveExpenses(expenses);
 
       res.status(200).json({
-        message: `Expense ${status.toLowerCase()} successfully`,
+
+        message:
+          `Expense ${status.toLowerCase()} successfully`,
+
         expense:
           expenses[expenseIndex],
       });
+
     } catch (error) {
+
       console.error(error);
 
       res.status(500).json({
@@ -507,12 +572,14 @@ app.put(
   }
 );
 
-/* =========================================================
-   START SERVER
-   ========================================================= */
+// =========================================================
+// START SERVER
+// =========================================================
 
 app.listen(PORT, () => {
+
   console.log(
-    `Server running on http://localhost:${PORT}`
+    `Server running on port ${PORT}`
   );
+
 });

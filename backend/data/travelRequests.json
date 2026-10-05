@@ -1,0 +1,68 @@
+[
+  {
+    "id": "39cc128d-8876-457f-b974-134f441d8ab7",
+    "employeeName": "Meenakshi",
+    "destination": "Bengaluru",
+    "purpose": "company conference",
+    "departureDate": "2026-10-10",
+    "returnDate": "2026-10-13",
+    "budget": 18000,
+    "status": "Approved",
+    "createdAt": "2026-09-21T04:50:18.536Z"
+  },
+  {
+    "id": "ede78263-5563-4859-9360-627388710067",
+    "employeeName": "Neha",
+    "destination": "Mumbai",
+    "purpose": "company conference",
+    "departureDate": "2026-09-25",
+    "returnDate": "2026-09-30",
+    "budget": 23000,
+    "status": "Rejected",
+    "createdAt": "2026-09-21T06:12:51.211Z"
+  },
+  {
+    "id": "68fc6d47-f6ae-498c-bbd2-ebc23c6546e7",
+    "employeeName": "Sreenidhi",
+    "destination": "Pune",
+    "purpose": "company conference",
+    "departureDate": "2026-10-02",
+    "returnDate": "2026-10-10",
+    "budget": 34992,
+    "status": "Approved",
+    "createdAt": "2026-09-21T06:24:27.811Z"
+  },
+  {
+    "id": "70b6c1b5-5a26-4e71-a37a-0a3637929074",
+    "employeeName": "Meena",
+    "destination": "Bengaluru",
+    "purpose": "company conference",
+    "departureDate": "2026-10-10",
+    "returnDate": "2026-10-13",
+    "budget": 15000,
+    "status": "Rejected",
+    "createdAt": "2026-09-21T06:30:44.643Z"
+  },
+  {
+    "id": "cfdad342-00d9-4f96-adc3-3780a8ddabd9",
+    "employeeName": "maansi",
+    "destination": "delhi",
+    "purpose": "meeting",
+    "departureDate": "2026-10-10",
+    "returnDate": "2026-10-13",
+    "budget": 15000,
+    "status": "Approved",
+    "createdAt": "2026-09-24T09:01:07.192Z"
+  },
+  {
+    "id": "a61fd005-902b-4888-ad8f-456f03310b0f",
+    "employeeName": "Rajesh",
+    "destination": "Delhi",
+    "purpose": "Conference",
+    "departureDate": "2026-11-20",
+    "returnDate": "2026-11-25",
+    "budget": 20000,
+    "status": "Pending",
+    "createdAt": "2026-09-30T19:04:16.528Z"
+  }
+]

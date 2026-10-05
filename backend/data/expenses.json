@@ -1,0 +1,14 @@
+[
+  {
+    "id": "0e0c6a55-057b-4193-b480-cf3a58056d5d",
+    "travelRequestId": "39cc128d-8876-457f-b974-134f441d8ab7",
+    "employeeName": "Meenakshi",
+    "destination": "Bengaluru",
+    "category": "Flight",
+    "amount": 3000,
+    "expenseDate": "2026-10-10",
+    "description": "flight charges from htd-blr",
+    "status": "Approved",
+    "createdAt": "2026-09-30T19:18:55.959Z"
+  }
+]
